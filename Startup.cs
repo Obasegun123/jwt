@@ -1,22 +1,18 @@
 using jwt.Auth;
+using jwt.Interface;
 using jwt.Model;
+using jwt.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace jwt
 {
@@ -33,46 +29,54 @@ namespace jwt
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+           
             // Entity Framework
-            services.AddDbContext<AppDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DatabaseContext>(option => option.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
+
+            
+
+
+            services.AddControllers();
 
             // For Identity
-            services.AddIdentity<AppUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+            //services.AddIdentity<AppUser, IdentityRole>()
+            //    .AddEntityFrameworkStores<AppDbContext>()
+            //    .AddDefaultTokenProviders();
+
+            services.AddTransient<IEmployees, EmployeeRepository>();
 
 
-           // var appSettingsSection = Configuration.GetSection("AppSettings");
+
+            // var appSettingsSection = Configuration.GetSection("AppSettings");
             //services.Configure<AppSettings>(appSettingsSection);
 
             //JWT Authentication
-           // var appSettings = appSettingsSection.Get<AppSettings>();
-          //  var Key = Encoding.ASCII.GetBytes(appSettings.Key);
+            // var appSettings = appSettingsSection.Get<AppSettings>();
+            //  var Key = Encoding.ASCII.GetBytes(appSettings.Key);
 
-            services.AddAuthentication(au =>
-            {
-                au.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                au.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                au.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                //Adding Jwt Bearer
-                .AddJwtBearer(jwts => { 
+            //services.AddAuthentication(au =>
+            //{
+            //    au.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    au.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    au.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            //})
+            //    //Adding Jwt Bearer
+            //    .AddJwtBearer(jwts => { 
 
-                jwts.RequireHttpsMetadata = false;
-                jwts.SaveToken = true;
-                jwts.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"])),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = Configuration["JWT:ValidAudience"],
-                    ValidIssuer = Configuration["JWT:ValidIssuer"],
+            //    jwts.RequireHttpsMetadata = false;
+            //    jwts.SaveToken = true;
+            //    jwts.TokenValidationParameters = new TokenValidationParameters()
+            //    {
+            //        ValidateIssuerSigningKey = true,
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"])),
+            //        ValidateIssuer = true,
+            //        ValidateAudience = true,
+            //        ValidAudience = Configuration["JWT:ValidAudience"],
+            //        ValidIssuer = Configuration["JWT:ValidIssuer"],
 
-                };
+            //    };
 
-            });
+            //});
 
 
 
