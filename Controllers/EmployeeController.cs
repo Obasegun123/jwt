@@ -1,5 +1,6 @@
 ﻿using jwt.Interface;
 using jwt.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace jwt.Controllers
 {
+    [Authorize]
     [Route("api/employee")]
     [ApiController]
     public class EmployeeController : ControllerBase

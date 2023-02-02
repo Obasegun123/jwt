@@ -38,45 +38,24 @@ namespace jwt
 
             services.AddControllers();
 
-            // For Identity
-            //services.AddIdentity<AppUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<AppDbContext>()
-            //    .AddDefaultTokenProviders();
-
             services.AddTransient<IEmployees, EmployeeRepository>();
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = Configuration ["Jwt:Audience"],
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+            });
 
 
-            // var appSettingsSection = Configuration.GetSection("AppSettings");
-            //services.Configure<AppSettings>(appSettingsSection);
 
-            //JWT Authentication
-            // var appSettings = appSettingsSection.Get<AppSettings>();
-            //  var Key = Encoding.ASCII.GetBytes(appSettings.Key);
-
-            //services.AddAuthentication(au =>
-            //{
-            //    au.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    au.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    au.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //    //Adding Jwt Bearer
-            //    .AddJwtBearer(jwts => { 
-
-            //    jwts.RequireHttpsMetadata = false;
-            //    jwts.SaveToken = true;
-            //    jwts.TokenValidationParameters = new TokenValidationParameters()
-            //    {
-            //        ValidateIssuerSigningKey = true,
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"])),
-            //        ValidateIssuer = true,
-            //        ValidateAudience = true,
-            //        ValidAudience = Configuration["JWT:ValidAudience"],
-            //        ValidIssuer = Configuration["JWT:ValidIssuer"],
-
-            //    };
-
-            //});
 
 
 
@@ -97,8 +76,9 @@ namespace jwt
             }
 
             app.UseRouting();
-
+            app.UseHttpsRedirection();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {
